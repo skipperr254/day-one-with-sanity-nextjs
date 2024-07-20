@@ -30,6 +30,7 @@ export default async function EventPage({
         query: EVENT_QUERY,
         params,
     });
+    console.log(params)
     const {
         name,
         date,
