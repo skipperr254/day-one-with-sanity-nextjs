@@ -6,19 +6,49 @@ import { client, sanityFetch } from "@/sanity/client";
 import Link from "next/link";
 import Image from "next/image";
 
-// const EVENT_QUERY = `*[_type == event && slug.current == $slug][0]{..., headline->, venue->}`;
-const EVENT_QUERY = `*[_type == "event" && slug.current == $slug][0]{..., headline->, venue->}`;
+const EVENT_QUERY = `*[
+    _type == "event" &&
+    slug.current == $slug
+  ][0]{
+  ...,
+  headline->,
+  venue->
+}`;
 
 const { projectId, dataset } = client.config();
-const urlFor = (source: SanityImageSource) => projectId && dataset ? imageUrlBuilder({ projectId, dataset }).image(source) : null;
+const urlFor = (source: SanityImageSource) =>
+    projectId && dataset
+        ? imageUrlBuilder({ projectId, dataset }).image(source)
+        : null;
 
-export default async function EventPage({ params }: { params: { slug: string } }) {
-    const event = await sanityFetch<SanityDocument>({ query: EVENT_QUERY, params });
-    const { name, date, headline, image, details, eventType, doorsOpen, venue, tickets, } = event;
-    const eventImageUrl = image ? urlFor(image)?.width(550).height(310).url() : null;
+export default async function EventPage({
+    params,
+}: {
+    params: { slug: string };
+}) {
+    const event = await sanityFetch<SanityDocument>({
+        query: EVENT_QUERY,
+        params,
+    });
+    const {
+        name,
+        date,
+        headline,
+        image,
+        details,
+        eventType,
+        doorsOpen,
+        venue,
+        tickets,
+    } = event;
+    const eventImageUrl = image
+        ? urlFor(image)?.width(550).height(310).url()
+        : null;
     const eventDate = new Date(date).toDateString();
     const eventTime = new Date(date).toLocaleTimeString();
-    const doorsOpenTime = new Date(new Date(date).getTime() + doorsOpen * 60000).toLocaleTimeString();
+    const doorsOpenTime = new Date(
+        new Date(date).getTime() + doorsOpen * 60000
+    ).toLocaleTimeString();
 
     return (
         <main className="container mx-auto grid gap-12 p-12">
@@ -94,5 +124,5 @@ export default async function EventPage({ params }: { params: { slug: string } }
                 </div>
             </div>
         </main>
-    )
+    );
 }
